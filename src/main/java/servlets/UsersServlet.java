@@ -2,12 +2,12 @@ package servlets;
 
 import accounts.AccountService;
 import accounts.UserProfile;
-import com.google.gson.Gson;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.io.IOException;
 
 public class UsersServlet extends HttpServlet {
@@ -20,16 +20,25 @@ public class UsersServlet extends HttpServlet {
 
     public void doGet(HttpServletRequest request,
                       HttpServletResponse response) throws ServletException, IOException {
+        String login = request.getParameter("login");
+        String pass = request.getParameter("password");
+        String email = request.getParameter("email");
+
+        if (login == null || pass == null || email == null) {
+            response.setContentType(contentType);
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            return;
+        }
+
+        accountService.getUserByLogin(login);
         response.setContentType(contentType);
-        Gson gson = new Gson();
-        response.getWriter().println(gson.toJson(accountService));
         response.setStatus(HttpServletResponse.SC_OK);
     }
 
     public void doPost(HttpServletRequest request,
                   HttpServletResponse response) throws ServletException, IOException {
-        String login = request.getParameter("loginSignUp");
-        String pass = request.getParameter("passwordSignUp");
+        String login = request.getParameter("login");
+        String pass = request.getParameter("password");
         String email = request.getParameter("email");
 
         if (login == null || pass == null) {
